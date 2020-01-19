@@ -40,6 +40,7 @@
                         <th>Temp. (C)</th>
                         <th>Temp. (F)</th>
                         <th>Summary</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,6 +51,13 @@
                             <td>@forecast.TemperatureC</td>
                             <td>@forecast.TemperatureF</td>
                             <td>@forecast.Summary</td>
+                            <td>
+                                <!-- Edit the current forecast -->
+                                <button class="btn btn-primary"
+                                        @onclick="(() => EditForecast(forecast))">
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -102,6 +110,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     List<WeatherForecast> forecasts;
+
     protected override async Task OnInitializedAsync()
     {
         // Get the current user
@@ -113,11 +122,13 @@
 
     WeatherForecast objWeatherForecast = new WeatherForecast();
     bool ShowPopup = false;
+
     void ClosePopup()
     {
         // Close the Popup
         ShowPopup = false;
     }
+
     void AddNewForecast()
     {
         // Make new forecast
@@ -127,8 +138,9 @@
         // Open the Popup
         ShowPopup = true;
     }
+
     async Task SaveForecast()
-    {
+{
         // Close the Popup
         ShowPopup = false;
         // Get the current user
@@ -152,9 +164,20 @@
         else
         {
             // This is an update
+            var result =
+            @Service.UpdateForecastAsync(objWeatherForecast);
         }
         // Get the forecasts for the current user
         forecasts =
         await @Service.GetForecastAsync(user.Identity.Name);
+    }
+
+    void EditForecast(WeatherForecast weatherForecast)
+    {
+        // Set the selected forecast
+        // as the current forecast
+        objWeatherForecast = weatherForecast;
+        // Open the Popup
+        ShowPopup = true;
     }
 }
