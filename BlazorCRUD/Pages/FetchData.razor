@@ -94,6 +94,15 @@
                                     @onclick="SaveForecast">
                                 Save
                             </button>
+                            <!-- Only show delete button if not a new record -->
+                            @if (objWeatherForecast.Id > 0)
+                            {
+                                <!-- Button to delete the forecast -->
+                                <button class="btn btn-primary"
+                                        @onclick="DeleteForecast">
+                                    Delete
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -179,5 +188,18 @@
         objWeatherForecast = weatherForecast;
         // Open the Popup
         ShowPopup = true;
+    }
+
+    async Task DeleteForecast()
+    {
+        // Close the Popup
+        ShowPopup = false;
+        // Get the current user
+        var user = (await authenticationStateTask).User;
+        // Delete the forecast
+        var result = @Service.DeleteForecastAsync(objWeatherForecast);
+        // Get the forecasts for the current user
+        forecasts =
+        await @Service.GetForecastAsync(user.Identity.Name);
     }
 }
